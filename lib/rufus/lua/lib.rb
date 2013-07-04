@@ -52,66 +52,71 @@ module Lua
       ffi_lib(*paths)
 
     rescue LoadError => le
-      raise(
-        "didn't find the lua library (liblua or dylib) on your system, " +
-        "see https://github.com/jmettraux/rufus-lua/ to learn how to get it"
-      )
+      # raise(
+      #   "didn't find the lua library (liblua or dylib) on your system, " +
+      #   "see https://github.com/jmettraux/rufus-lua/ to learn how to get it"
+      # )
+      puts "didn't find the lua library (liblua or dylib) on your system, " +
+        "see https://github.com/jmettraux/rufus-lua/ to learn how to get it" +
+        "\n" +
+        "However I will pretend nothing happened juste in case I am in a load environment"
+    else
+
+      #
+      # attach functions
+
+      attach_function :strlen, [ :string ], :int
+
+      attach_function :lua_close, [ :pointer ], :void
+
+      attach_function :luaL_openlibs, [ :pointer ], :void
+
+      %w[ base package string table math io os debug ].each do |libname|
+        attach_function "luaopen_#{libname}", [ :pointer ], :void
+      end
+
+      attach_function :lua_pcall, [ :pointer, :int, :int, :int ], :int
+      #attach_function :lua_resume, [ :pointer, :int ], :int
+
+      attach_function :lua_toboolean, [ :pointer, :int ], :int
+      attach_function :lua_tonumber, [ :pointer, :int ], :double
+      attach_function :lua_tolstring, [ :pointer, :int, :pointer ], :string
+
+      attach_function :lua_type, [ :pointer, :int ], :int
+      attach_function :lua_typename, [ :pointer, :int ], :string
+
+      attach_function :lua_gettop, [ :pointer ], :int
+      attach_function :lua_settop, [ :pointer, :int ], :void
+
+      attach_function :lua_objlen, [ :pointer, :int ], :int
+      attach_function :lua_getfield, [ :pointer, :int, :string ], :pointer
+      attach_function :lua_gettable, [ :pointer, :int ], :void
+
+      attach_function :lua_createtable, [ :pointer, :int, :int ], :void
+      #attach_function :lua_newtable, [ :pointer ], :void
+      attach_function :lua_settable, [ :pointer, :int ], :void
+
+      attach_function :lua_next, [ :pointer, :int ], :int
+
+      attach_function :lua_pushnil, [ :pointer ], :pointer
+      attach_function :lua_pushboolean, [ :pointer, :int ], :pointer
+      attach_function :lua_pushinteger, [ :pointer, :int ], :pointer
+      attach_function :lua_pushnumber, [ :pointer, :double ], :pointer
+      attach_function :lua_pushstring, [ :pointer, :string ], :pointer
+
+      attach_function :lua_rawgeti, [ :pointer, :int, :int ], :void
+
+      attach_function :luaL_newstate, [], :pointer
+      attach_function :luaL_loadbuffer, [ :pointer, :string, :int, :string ], :int
+      attach_function :luaL_ref, [ :pointer, :int ], :int
+      attach_function :luaL_unref, [ :pointer, :int, :int ], :void
+
+      attach_function :lua_gc, [ :pointer, :int, :int ], :int
+
+      callback :cfunction, [ :pointer ], :int
+      attach_function :lua_pushcclosure, [ :pointer, :cfunction, :int ], :void
+      attach_function :lua_setfield, [ :pointer, :int, :string ], :void
     end
-
-    #
-    # attach functions
-
-    attach_function :strlen, [ :string ], :int
-
-    attach_function :lua_close, [ :pointer ], :void
-
-    attach_function :luaL_openlibs, [ :pointer ], :void
-
-    %w[ base package string table math io os debug ].each do |libname|
-      attach_function "luaopen_#{libname}", [ :pointer ], :void
-    end
-
-    attach_function :lua_pcall, [ :pointer, :int, :int, :int ], :int
-    #attach_function :lua_resume, [ :pointer, :int ], :int
-
-    attach_function :lua_toboolean, [ :pointer, :int ], :int
-    attach_function :lua_tonumber, [ :pointer, :int ], :double
-    attach_function :lua_tolstring, [ :pointer, :int, :pointer ], :string
-
-    attach_function :lua_type, [ :pointer, :int ], :int
-    attach_function :lua_typename, [ :pointer, :int ], :string
-
-    attach_function :lua_gettop, [ :pointer ], :int
-    attach_function :lua_settop, [ :pointer, :int ], :void
-
-    attach_function :lua_objlen, [ :pointer, :int ], :int
-    attach_function :lua_getfield, [ :pointer, :int, :string ], :pointer
-    attach_function :lua_gettable, [ :pointer, :int ], :void
-
-    attach_function :lua_createtable, [ :pointer, :int, :int ], :void
-    #attach_function :lua_newtable, [ :pointer ], :void
-    attach_function :lua_settable, [ :pointer, :int ], :void
-
-    attach_function :lua_next, [ :pointer, :int ], :int
-
-    attach_function :lua_pushnil, [ :pointer ], :pointer
-    attach_function :lua_pushboolean, [ :pointer, :int ], :pointer
-    attach_function :lua_pushinteger, [ :pointer, :int ], :pointer
-    attach_function :lua_pushnumber, [ :pointer, :double ], :pointer
-    attach_function :lua_pushstring, [ :pointer, :string ], :pointer
-
-    attach_function :lua_rawgeti, [ :pointer, :int, :int ], :void
-
-    attach_function :luaL_newstate, [], :pointer
-    attach_function :luaL_loadbuffer, [ :pointer, :string, :int, :string ], :int
-    attach_function :luaL_ref, [ :pointer, :int ], :int
-    attach_function :luaL_unref, [ :pointer, :int, :int ], :void
-
-    attach_function :lua_gc, [ :pointer, :int, :int ], :int
-
-    callback :cfunction, [ :pointer ], :int
-    attach_function :lua_pushcclosure, [ :pointer, :cfunction, :int ], :void
-    attach_function :lua_setfield, [ :pointer, :int, :string ], :void
   end
 end
 end
