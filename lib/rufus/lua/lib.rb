@@ -38,6 +38,9 @@ module Lua
     paths = Array(
       ENV['LUA_LIB'] ||
       Dir.glob('/usr/lib/liblua*.so') +
+      Dir.glob('/usr/lib32/liblua*.so') +
+      Dir.glob('/usr/lib64/liblua*.so') +
+      Dir.glob('/usr/lib/x86_64-linux-gnu/liblua*.so') +
       Dir.glob('/usr/local/lib/liblua*.so') +
       Dir.glob('/opt/local/lib/liblua*.so') +
       Dir.glob('/usr/lib/liblua*.dylib') +
