@@ -25,7 +25,7 @@
 
 module Rufus::Lua
 
-  VERSION = '1.1.2'
+  VERSION = '1.1.4'
 
   #
   # An error class for this gem/library.
@@ -589,4 +589,3 @@ module Rufus::Lua
     end
   end
 end
-
